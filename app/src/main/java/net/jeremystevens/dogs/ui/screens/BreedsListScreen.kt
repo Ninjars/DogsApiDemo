@@ -41,7 +41,7 @@ fun BreedsListScreen(
 }
 
 @Composable
-fun BreedsListStateSwitcher(
+private fun BreedsListStateSwitcher(
     state: BreedsListState,
     eventHandler: (BreedsListEvent) -> Unit,
 ) {
