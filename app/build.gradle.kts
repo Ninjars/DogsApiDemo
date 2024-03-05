@@ -77,7 +77,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
 
     // Dagger
-    val hiltVersion = 2.49
+    val hiltVersion = 2.51
     kapt("com.google.dagger:dagger-compiler:$hiltVersion")
     implementation("com.google.dagger:dagger:$hiltVersion")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
