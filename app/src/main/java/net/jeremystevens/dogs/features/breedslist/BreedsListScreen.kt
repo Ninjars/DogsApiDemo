@@ -1,4 +1,4 @@
-package net.jeremystevens.dogs.ui.screens
+package net.jeremystevens.dogs.features.breedslist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,11 +19,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.jeremystevens.dogs.R
-import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel
+import net.jeremystevens.dogs.features.breedslist.BreedsListViewState.BreedsListViewContent
+import net.jeremystevens.dogs.features.breedslist.BreedsListViewState.BreedsListViewContent.ErrorViewState
 import net.jeremystevens.dogs.ui.components.ErrorPopup
+import net.jeremystevens.dogs.ui.components.LoadingScreen
 import net.jeremystevens.dogs.ui.components.Refreshable
-import net.jeremystevens.dogs.ui.screens.BreedsListViewState.BreedsListViewContent
-import net.jeremystevens.dogs.ui.screens.BreedsListViewState.BreedsListViewContent.ErrorViewState
 import net.jeremystevens.dogs.ui.theme.DogsTheme
 import net.jeremystevens.dogs.utils.rememberEventConsumer
 

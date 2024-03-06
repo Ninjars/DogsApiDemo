@@ -1,4 +1,4 @@
-package net.jeremystevens.dogs.ui.screens
+package net.jeremystevens.dogs.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

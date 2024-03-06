@@ -14,8 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import net.jeremystevens.dogs.ui.screens.BreedPhotosScreen
-import net.jeremystevens.dogs.ui.screens.BreedsListScreen
+import net.jeremystevens.dogs.features.breedslist.BreedsListScreen
+import net.jeremystevens.dogs.features.dogpics.DogPicsScreen
 import net.jeremystevens.dogs.ui.theme.DogsTheme
 import javax.inject.Inject
 
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                                 },
                             )
                         ) {
-                            BreedPhotosScreen()
+                            DogPicsScreen()
                         }
                     }
                 }

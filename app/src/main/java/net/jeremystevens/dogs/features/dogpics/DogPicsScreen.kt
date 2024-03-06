@@ -1,4 +1,4 @@
-package net.jeremystevens.dogs.ui.screens
+package net.jeremystevens.dogs.features.dogpics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,49 +19,50 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import net.jeremystevens.dogs.features.dogpics.DogPicsViewState.Content
+import net.jeremystevens.dogs.features.dogpics.DogPicsViewState.Loading
+import net.jeremystevens.dogs.ui.components.LoadingScreen
 import net.jeremystevens.dogs.ui.components.Refreshable
-import net.jeremystevens.dogs.ui.screens.BreedPhotosState.BreedPhotosContent
-import net.jeremystevens.dogs.ui.screens.BreedPhotosState.Loading
 import net.jeremystevens.dogs.ui.theme.DogsTheme
 
-sealed class BreedPhotosState {
-    data object Loading : BreedPhotosState()
-    data class BreedPhotosContent(
+sealed class DogPicsViewState {
+    data object Loading : DogPicsViewState()
+    data class Content(
         val photoUrls: List<String>,
         val isRefreshing: Boolean,
-    ) : BreedPhotosState()
+    ) : DogPicsViewState()
 }
 
-sealed class BreedPhotoEvent {
-    data object TriggerRefresh : BreedPhotoEvent()
+sealed class DogPicsEvent {
+    data object TriggerRefresh : DogPicsEvent()
 }
 
 private const val MinImageSizeDp = 100
 
 @Composable
-fun BreedPhotosScreen() {
+fun DogPicsScreen() {
 
 }
 
 @Composable
-private fun BreedPhotoStateSwitcher(
-    state: BreedPhotosState,
-    eventHandler: (BreedPhotoEvent) -> Unit,
+private fun DogPicsStateSwitcher(
+    state: DogPicsViewState,
+    eventHandler: (DogPicsEvent) -> Unit,
 ) {
     when (state) {
-        is BreedPhotosContent -> BreedPhotosContent(state, eventHandler)
+        is Content -> DogPicsContent(state, eventHandler)
         is Loading -> LoadingScreen()
     }
 }
 
 @Composable
-private fun BreedPhotosContent(
-    state: BreedPhotosContent,
-    eventHandler: (BreedPhotoEvent) -> Unit,
+private fun DogPicsContent(
+    state: Content,
+    eventHandler: (DogPicsEvent) -> Unit,
 ) {
     Refreshable(
         isRefreshing = state.isRefreshing,
-        onRefreshTriggered = { eventHandler(BreedPhotoEvent.TriggerRefresh) },
+        onRefreshTriggered = { eventHandler(DogPicsEvent.TriggerRefresh) },
     ) {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Adaptive(MinImageSizeDp.dp),
@@ -71,14 +72,14 @@ private fun BreedPhotosContent(
             modifier = Modifier.fillMaxSize()
         ) {
             items(items = state.photoUrls, key = { it }) {
-                BreedPhotoItem(it)
+                DogPicsItem(it)
             }
         }
     }
 }
 
 @Composable
-private fun BreedPhotoItem(
+private fun DogPicsItem(
     url: String,
     modifier: Modifier = Modifier
 ) {
@@ -98,10 +99,10 @@ private fun BreedPhotoItem(
 
 @Preview(apiLevel = 33, showBackground = true)
 @Composable
-private fun DogPhotosScreenPreview() {
+private fun DogPicsScreenPreview() {
     DogsTheme {
-        BreedPhotoStateSwitcher(
-            state = BreedPhotosContent(
+        DogPicsStateSwitcher(
+            state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = false,
             ),
@@ -114,8 +115,8 @@ private fun DogPhotosScreenPreview() {
 @Composable
 private fun DogPhotosScreenRefreshingPreview() {
     DogsTheme {
-        BreedPhotoStateSwitcher(
-            state = BreedPhotosContent(
+        DogPicsStateSwitcher(
+            state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = true,
             ),

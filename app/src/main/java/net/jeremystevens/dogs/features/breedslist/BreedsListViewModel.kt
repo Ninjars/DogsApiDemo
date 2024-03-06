@@ -14,9 +14,7 @@ import net.jeremystevens.dogs.data.DogsRepository
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State.BreedsList
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State.Loading
-import net.jeremystevens.dogs.ui.screens.BreedsListEvent
-import net.jeremystevens.dogs.ui.screens.BreedsListViewState
-import net.jeremystevens.dogs.ui.screens.BreedsListViewState.BreedsListViewContent.ErrorViewState
+import net.jeremystevens.dogs.features.breedslist.BreedsListViewState.BreedsListViewContent.ErrorViewState
 import net.jeremystevens.dogs.utils.toViewState
 import java.util.function.Consumer
 import javax.inject.Inject
