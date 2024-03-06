@@ -19,21 +19,37 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import net.jeremystevens.dogs.R
+
+
+sealed interface ErrorViewState {
+    data class NetworkError(val code: Int) : ErrorViewState
+    data object EmptyResponse : ErrorViewState
+}
 
 /**
  * Displays an error message in a lil popup at the bottom of the screen,
  * which will last until a null message is supplied.
  */
 @Composable
-fun BoxScope.ErrorPopup(errorMessage: String?) {
+fun BoxScope.ErrorPopup(errorMessage: ErrorViewState?) {
     AnimatedVisibility(
         visible = errorMessage != null,
         modifier = Modifier.align(Alignment.BottomCenter)
     ) {
-        ErrorContent(errorMessage)
+        ErrorContent(errorMessage.toMessage())
     }
 }
+
+@Composable
+private fun ErrorViewState?.toMessage(): String? =
+    when (this) {
+        null -> null
+        is ErrorViewState.EmptyResponse -> stringResource(R.string.error_message_empty_response)
+        is ErrorViewState.NetworkError -> stringResource(R.string.error_message_error_code, code)
+    }
 
 @Composable
 private fun ErrorContent(errorMessage: String?) {
