@@ -3,9 +3,8 @@ package net.jeremystevens.dogs.features.dogpics
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -14,9 +13,12 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -27,6 +29,7 @@ import net.jeremystevens.dogs.ui.components.ErrorViewState
 import net.jeremystevens.dogs.ui.components.LoadingScreen
 import net.jeremystevens.dogs.ui.components.Refreshable
 import net.jeremystevens.dogs.ui.theme.DogsTheme
+import net.jeremystevens.dogs.utils.rememberEventConsumer
 
 sealed class DogPicsViewState {
     data object Loading : DogPicsViewState()
@@ -41,20 +44,20 @@ sealed class DogPicsEvent {
     data object TriggerRefresh : DogPicsEvent()
 }
 
-private const val MinImageSizeDp = 100
-
 @Composable
-fun DogPicsScreen() {
-
+fun DogPicsScreen(
+    viewModel: DogPicsViewModel,
+) {
+    DogPicsStateSwitcher(viewModel.viewState.collectAsState(), rememberEventConsumer(viewModel))
 }
 
 @Composable
 private fun DogPicsStateSwitcher(
-    state: DogPicsViewState,
+    state: State<DogPicsViewState>,
     eventHandler: (DogPicsEvent) -> Unit,
 ) {
-    when (state) {
-        is Content -> DogPicsContent(state, eventHandler)
+    when (val stateValue = state.value) {
+        is Content -> DogPicsContent(stateValue, eventHandler)
         is Loading -> LoadingScreen()
     }
 }
@@ -70,7 +73,7 @@ private fun DogPicsContent(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Adaptive(MinImageSizeDp.dp),
+                columns = StaggeredGridCells.Fixed(2),
                 contentPadding = PaddingValues(8.dp),
                 verticalItemSpacing = 8.dp,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -92,14 +95,14 @@ private fun DogPicsItem(
 ) {
     Card(
         modifier = modifier
-            .wrapContentSize()
     ) {
         AsyncImage(
             model = url,
             placeholder = ColorPainter(MaterialTheme.colorScheme.tertiary),
             error = rememberVectorPainter(Icons.Default.Warning),
+            contentScale = ContentScale.FillWidth,
             contentDescription = null,
-            modifier = Modifier.defaultMinSize(MinImageSizeDp.dp, MinImageSizeDp.dp)
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -108,7 +111,7 @@ private fun DogPicsItem(
 @Composable
 private fun DogPicsScreenPreview() {
     DogsTheme {
-        DogPicsStateSwitcher(
+        DogPicsContent(
             state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = false,
@@ -123,7 +126,7 @@ private fun DogPicsScreenPreview() {
 @Composable
 private fun DogPhotosScreenRefreshingPreview() {
     DogsTheme {
-        DogPicsStateSwitcher(
+        DogPicsContent(
             state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = true,
@@ -138,7 +141,7 @@ private fun DogPhotosScreenRefreshingPreview() {
 @Composable
 private fun DogPicsScreenErrorPreview() {
     DogsTheme {
-        DogPicsStateSwitcher(
+        DogPicsContent(
             state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = false,

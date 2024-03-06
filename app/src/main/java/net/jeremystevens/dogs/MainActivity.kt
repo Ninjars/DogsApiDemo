@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                                 },
                             )
                         ) {
-                            DogPicsScreen()
+                            DogPicsScreen(hiltViewModel())
                         }
                     }
                 }
