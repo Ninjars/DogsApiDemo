@@ -15,7 +15,7 @@ sealed class Route {
         override val routeId by lazy { "${BreedPhotos::class.java.simpleName}/$breedId" }
 
         companion object {
-            val baseRouteId: String by lazy { "${BreedPhotos::class.java.simpleName}/$routeBreedId" }
+            val baseRouteId: String by lazy { "${BreedPhotos::class.java.simpleName}/{$routeBreedId}" }
             const val routeBreedId = "breedId"
         }
     }
