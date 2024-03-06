@@ -5,6 +5,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -26,17 +27,16 @@ fun Refreshable(
     content: @Composable () -> Unit,
 ) {
 
-    // synchronise PullToRefresh UI with state
     val refreshState = rememberPullToRefreshState()
-    if (!isRefreshing) {
-        refreshState.endRefresh()
-    } else if (!refreshState.isRefreshing) {
-        refreshState.startRefresh()
+    LaunchedEffect(refreshState.isRefreshing) {
+        if (refreshState.isRefreshing) {
+            onRefreshTriggered()
+        }
     }
-
-    // detect UI-initiated refresh
-    if (refreshState.isRefreshing && !isRefreshing) {
-        onRefreshTriggered()
+    LaunchedEffect(isRefreshing) {
+        if (!isRefreshing) {
+            refreshState.endRefresh()
+        }
     }
 
     Box(
