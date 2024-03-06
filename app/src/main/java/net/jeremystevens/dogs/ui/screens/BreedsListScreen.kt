@@ -1,6 +1,7 @@
 package net.jeremystevens.dogs.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,23 +11,38 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import net.jeremystevens.dogs.R
+import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel
+import net.jeremystevens.dogs.ui.components.ErrorPopup
 import net.jeremystevens.dogs.ui.components.Refreshable
-import net.jeremystevens.dogs.ui.screens.BreedsListState.BreedsListContent
+import net.jeremystevens.dogs.ui.screens.BreedsListViewState.BreedsListViewContent
+import net.jeremystevens.dogs.ui.screens.BreedsListViewState.BreedsListViewContent.ErrorViewState
 import net.jeremystevens.dogs.ui.theme.DogsTheme
+import net.jeremystevens.dogs.utils.rememberEventConsumer
 
-sealed class BreedsListState {
-    data object Loading : BreedsListState()
-    data class BreedsListContent(
+@Stable
+sealed class BreedsListViewState {
+    data object Loading : BreedsListViewState()
+    data class BreedsListViewContent(
         val dogBreeds: List<DogBreedItem>,
         val isRefreshing: Boolean,
-    ) : BreedsListState() {
+        val error: ErrorViewState?,
+    ) : BreedsListViewState() {
         data class DogBreedItem(
             val id: String,
             val displayName: String,
         )
+
+        sealed interface ErrorViewState {
+            data class NetworkError(val code: Int) : ErrorViewState
+            data object EmptyResponse : ErrorViewState
+        }
     }
 }
 
@@ -46,26 +62,26 @@ private fun BreedsListStateSwitcher(
     eventHandler: (BreedsListEvent) -> Unit,
 ) {
     when (state) {
-        is BreedsListContent -> BreedsListContent(state, eventHandler)
-        is BreedsListState.Loading -> LoadingScreen()
+        is BreedsListViewContent -> BreedsListContent(state, eventHandler)
+        is BreedsListViewState.Loading -> LoadingScreen()
     }
 }
 
 @Composable
 private fun BreedsListContent(
-    state: BreedsListContent,
+    state: BreedsListViewContent,
     eventHandler: (BreedsListEvent) -> Unit,
 ) {
     Refreshable(
         isRefreshing = state.isRefreshing,
         onRefreshTriggered = { eventHandler(BreedsListEvent.TriggerRefreshList) }
     ) {
-        LazyColumn(
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (!state.isRefreshing) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
                 items(items = state.dogBreeds, key = { it.id }) {
                     DogBreedView(
                         state = it,
@@ -74,13 +90,22 @@ private fun BreedsListContent(
                     )
                 }
             }
+            ErrorPopup(state.error.toMessage())
         }
     }
 }
 
 @Composable
+private fun ErrorViewState?.toMessage(): String? =
+    when (this) {
+        null -> null
+        is ErrorViewState.EmptyResponse -> stringResource(R.string.error_message_empty_response)
+        is ErrorViewState.NetworkError -> stringResource(R.string.error_message_error_code, code)
+    }
+
+@Composable
 private fun DogBreedView(
-    state: BreedsListContent.DogBreedItem,
+    state: BreedsListViewContent.DogBreedItem,
     eventHandler: (BreedsListEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -100,17 +125,17 @@ private fun DogBreedView(
 @Composable
 private fun DogBreedScreenPreview() {
     DogsTheme {
-        BreedsListStateSwitcher(
-            state = BreedsListContent(
+        BreedsListContent(
+            state = BreedsListViewContent(
                 dogBreeds = listOf(
-                    BreedsListContent.DogBreedItem("1", "Breed 1"),
-                    BreedsListContent.DogBreedItem("2", "Breed 2"),
-                    BreedsListContent.DogBreedItem("3", "Breed 3"),
+                    BreedsListViewContent.DogBreedItem("1", "Breed 1"),
+                    BreedsListViewContent.DogBreedItem("2", "Breed 2"),
+                    BreedsListViewContent.DogBreedItem("3", "Breed 3"),
                 ),
                 isRefreshing = false,
-            ),
-            eventHandler = {},
-        )
+                error = null,
+            )
+        ) {}
     }
 }
 
@@ -118,16 +143,34 @@ private fun DogBreedScreenPreview() {
 @Composable
 private fun DogBreedScreenRefreshingPreview() {
     DogsTheme {
-        BreedsListStateSwitcher(
-            state = BreedsListContent(
+        BreedsListContent(
+            state = BreedsListViewContent(
                 dogBreeds = listOf(
-                    BreedsListContent.DogBreedItem("1", "Breed 1"),
-                    BreedsListContent.DogBreedItem("2", "Breed 2"),
-                    BreedsListContent.DogBreedItem("3", "Breed 3"),
+                    BreedsListViewContent.DogBreedItem("1", "Breed 1"),
+                    BreedsListViewContent.DogBreedItem("2", "Breed 2"),
+                    BreedsListViewContent.DogBreedItem("3", "Breed 3"),
                 ),
                 isRefreshing = true,
+                error = null,
             ),
-            eventHandler = {},
-        )
+        ) {}
+    }
+}
+
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+private fun DogBreedScreenErrorPreview() {
+    DogsTheme {
+        BreedsListContent(
+            state = BreedsListViewContent(
+                dogBreeds = listOf(
+                    BreedsListViewContent.DogBreedItem("1", "Breed 1"),
+                    BreedsListViewContent.DogBreedItem("2", "Breed 2"),
+                    BreedsListViewContent.DogBreedItem("3", "Breed 3"),
+                ),
+                isRefreshing = true,
+                error = ErrorViewState.NetworkError(404),
+            ),
+        ) {}
     }
 }
