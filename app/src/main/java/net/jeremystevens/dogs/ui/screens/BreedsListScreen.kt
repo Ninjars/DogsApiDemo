@@ -12,6 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -53,16 +54,18 @@ sealed class BreedsListEvent {
 
 @Composable
 fun BreedsListScreen(
+    viewModel: BreedsListViewModel,
 ) {
+    BreedsListStateSwitcher(viewModel.viewState.collectAsState(), rememberEventConsumer(viewModel))
 }
 
 @Composable
 private fun BreedsListStateSwitcher(
-    state: BreedsListState,
+    state: State<BreedsListViewState>,
     eventHandler: (BreedsListEvent) -> Unit,
 ) {
-    when (state) {
-        is BreedsListViewContent -> BreedsListContent(state, eventHandler)
+    when (val stateValue = state.value) {
+        is BreedsListViewContent -> BreedsListContent(stateValue, eventHandler)
         is BreedsListViewState.Loading -> LoadingScreen()
     }
 }
