@@ -1,6 +1,7 @@
 package net.jeremystevens.dogs.features.dogpics
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import net.jeremystevens.dogs.features.dogpics.DogPicsViewState.Content
 import net.jeremystevens.dogs.features.dogpics.DogPicsViewState.Loading
+import net.jeremystevens.dogs.ui.components.ErrorPopup
+import net.jeremystevens.dogs.ui.components.ErrorViewState
 import net.jeremystevens.dogs.ui.components.LoadingScreen
 import net.jeremystevens.dogs.ui.components.Refreshable
 import net.jeremystevens.dogs.ui.theme.DogsTheme
@@ -30,6 +33,7 @@ sealed class DogPicsViewState {
     data class Content(
         val photoUrls: List<String>,
         val isRefreshing: Boolean,
+        val error: ErrorViewState?,
     ) : DogPicsViewState()
 }
 
@@ -64,16 +68,19 @@ private fun DogPicsContent(
         isRefreshing = state.isRefreshing,
         onRefreshTriggered = { eventHandler(DogPicsEvent.TriggerRefresh) },
     ) {
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Adaptive(MinImageSizeDp.dp),
-            contentPadding = PaddingValues(8.dp),
-            verticalItemSpacing = 8.dp,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(items = state.photoUrls, key = { it }) {
-                DogPicsItem(it)
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Adaptive(MinImageSizeDp.dp),
+                contentPadding = PaddingValues(8.dp),
+                verticalItemSpacing = 8.dp,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(items = state.photoUrls, key = { it }) {
+                    DogPicsItem(it)
+                }
             }
+            ErrorPopup(state.error)
         }
     }
 }
@@ -105,6 +112,7 @@ private fun DogPicsScreenPreview() {
             state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = false,
+                error = null,
             ),
             eventHandler = {},
         )
@@ -119,6 +127,22 @@ private fun DogPhotosScreenRefreshingPreview() {
             state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = true,
+                error = null,
+            ),
+            eventHandler = {},
+        )
+    }
+}
+
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+private fun DogPicsScreenErrorPreview() {
+    DogsTheme {
+        DogPicsStateSwitcher(
+            state = Content(
+                photoUrls = listOf("1", "2", "3"),
+                isRefreshing = false,
+                error = ErrorViewState.NetworkError(404),
             ),
             eventHandler = {},
         )
