@@ -10,5 +10,5 @@ object DataModel {
 sealed class DataResult<T>(val isSuccess: Boolean) {
     data class Success<T>(val data: T) : DataResult<T>(isSuccess = true)
     class NoData<T> : DataResult<T>(isSuccess = false)
-    data class Failure<T>(val errorCode: Int) : DataResult<T>(isSuccess = false)
+    data class Failure<T>(val error: String) : DataResult<T>(isSuccess = false)
 }

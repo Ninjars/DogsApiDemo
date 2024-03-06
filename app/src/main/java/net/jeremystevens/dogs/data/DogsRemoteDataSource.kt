@@ -11,16 +11,24 @@ class DogsRemoteDataSource @Inject constructor(
     private val service: DogsService,
 ) {
     suspend fun getBreeds(): DataResult<Breeds> =
-        service.getAllBreeds().extractResult { it.mapToDataModel() }
+        try {
+            service.getAllBreeds().extractResult { it.mapToDataModel() }
+        } catch (e: Exception) {
+            DataResult.Failure("Exception: ${e.message}")
+        }
 
     suspend fun getDataForBreed(breedId: String): DataResult<BreedDetails> =
-        service.getBreedImages(id = breedId, count = 10).extractResult { it.mapToDataModel() }
+        try {
+            service.getBreedImages(id = breedId, count = 10).extractResult { it.mapToDataModel() }
+        } catch (e: Exception) {
+            DataResult.Failure("Exception: ${e.message}")
+        }
 
     private fun <T, S> Response<T>.extractResult(mapper: (T) -> S): DataResult<S> {
         val body = body()
         return when {
             !isSuccessful ->
-                DataResult.Failure(code())
+                DataResult.Failure(code().toString())
 
             body == null ->
                 DataResult.NoData()

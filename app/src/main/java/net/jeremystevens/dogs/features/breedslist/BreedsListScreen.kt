@@ -157,7 +157,7 @@ private fun DogBreedScreenErrorPreview() {
                     BreedsListViewContent.DogBreedItem("3", "Breed 3"),
                 ),
                 isRefreshing = true,
-                error = ErrorViewState.NetworkError(404),
+                error = ErrorViewState.NetworkError("404"),
             ),
         ) {}
     }

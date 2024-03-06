@@ -53,7 +53,7 @@ class DogPicsViewModel @Inject constructor(
             val error: ErrorState?,
         ) : State {
             data class ErrorState(
-                val code: Int?,
+                val code: String?,
             )
             companion object {
                 val Default = Content(emptyList(), false, null)
@@ -77,7 +77,7 @@ private suspend fun updateState(breedId: String, state: State, repository: DogsR
     return when (data) {
         is DataResult.Failure -> loadedState.copy(
             isRefreshing = false,
-            error = State.Content.ErrorState(data.errorCode),
+            error = State.Content.ErrorState(data.error),
         )
         is DataResult.NoData -> loadedState.copy(
             isRefreshing = false,

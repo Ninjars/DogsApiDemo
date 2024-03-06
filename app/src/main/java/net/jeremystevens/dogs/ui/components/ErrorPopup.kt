@@ -25,7 +25,7 @@ import net.jeremystevens.dogs.R
 
 
 sealed interface ErrorViewState {
-    data class NetworkError(val code: Int) : ErrorViewState
+    data class NetworkError(val code: String) : ErrorViewState
     data object EmptyResponse : ErrorViewState
 }
 

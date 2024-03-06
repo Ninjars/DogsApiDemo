@@ -145,7 +145,7 @@ private fun DogPicsScreenErrorPreview() {
             state = Content(
                 photoUrls = listOf("1", "2", "3"),
                 isRefreshing = false,
-                error = ErrorViewState.NetworkError(404),
+                error = ErrorViewState.NetworkError("404"),
             ),
             eventHandler = {},
         )
