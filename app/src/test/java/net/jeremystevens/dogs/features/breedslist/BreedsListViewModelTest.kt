@@ -12,7 +12,6 @@ import net.jeremystevens.dogs.data.DogsRepository
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewState.BreedsListViewContent.DogBreedItem
 import net.jeremystevens.dogs.ui.components.ErrorViewState
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.InstanceOfAssertFactories
 import org.junit.Rule
 import org.junit.Test
 
@@ -36,36 +35,24 @@ class BreedsListViewModelTest {
 
     @Test
     fun GIVEN_viewModel_WHEN_initialRepositoryFetchCompletesSuccessfully_THEN_emitsUpdatedViewState() {
-        assertInitialLoadResult(
-            repositoryValue = DataResult.Success(
-                DataModel.Breeds(
-                    listOf(DataModel.Breeds.BreedData("test_breed"))
-                )
-            ),
-            expectedViewModel = BreedsListViewState.BreedsListViewContent(
-                dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed")),
-                isRefreshing = false,
-                error = null,
-            )
+        assertViewState(
+            repositoryValues = listOf(successResult()),
+            expectedViewModel = ExpectedSuccessModel
         )
     }
 
     @Test
     fun GIVEN_viewModel_WHEN_initialRepositoryFetchFails_THEN_emitsUpdatedViewState() {
-        assertInitialLoadResult(
-            repositoryValue = DataResult.Failure("404"),
-            expectedViewModel = BreedsListViewState.BreedsListViewContent(
-                dogBreeds = emptyList(),
-                isRefreshing = false,
-                error = ErrorViewState.NetworkError("404"),
-            )
+        assertViewState(
+            repositoryValues = listOf(ErrorResult),
+            expectedViewModel = ExpectedErrorModel
         )
     }
 
     @Test
     fun GIVEN_viewModel_WHEN_initialRepositoryFetchReturnsEmpty_THEN_emitsUpdatedViewState() {
-        assertInitialLoadResult(
-            repositoryValue = DataResult.NoData(),
+        assertViewState(
+            repositoryValues = listOf(DataResult.NoData()),
             expectedViewModel = BreedsListViewState.BreedsListViewContent(
                 dogBreeds = emptyList(),
                 isRefreshing = false,
@@ -74,17 +61,81 @@ class BreedsListViewModelTest {
         )
     }
 
-    private fun assertInitialLoadResult(
-        repositoryValue: DataResult<DataModel.Breeds>,
+    @Test
+    fun GIVEN_initialRepositoryFetchReturnsEmpty_WHEN_refreshTriggered_AND_succeeds_THEN_emitsUpdatedViewState() {
+        assertViewState(
+            repositoryValues = listOf(DataResult.NoData(), successResult()),
+            events = listOf(BreedsListEvent.TriggerRefreshList),
+            expectedViewModel = ExpectedSuccessModel
+        )
+    }
+
+    @Test
+    fun GIVEN_initialRepositoryFetchReturnsEmpty_WHEN_refreshTriggered_AND_fails_THEN_emitsUpdatedViewState() {
+        assertViewState(
+            repositoryValues = listOf(DataResult.NoData(), ErrorResult),
+            events = listOf(BreedsListEvent.TriggerRefreshList),
+            expectedViewModel = ExpectedErrorModel
+        )
+    }
+
+    @Test
+    fun GIVEN_initialRepositoryFetchSuccessful_WHEN_refreshTriggered_AND_fails_THEN_emitsUpdatedViewState() {
+        assertViewState(
+            repositoryValues = listOf(successResult(), ErrorResult),
+            events = listOf(BreedsListEvent.TriggerRefreshList),
+            expectedViewModel = BreedsListViewState.BreedsListViewContent(
+                dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed")),
+                isRefreshing = false,
+                error = ErrorViewState.NetworkError("404"),
+            )
+        )
+    }
+
+    @Test
+    fun GIVEN_initialRepositoryFetchSuccessful_WHEN_refreshTriggered_AND_newResults_THEN_emitsUpdatedViewState() {
+        assertViewState(
+            repositoryValues = listOf(successResult(), successResult("test_breed_2")),
+            events = listOf(BreedsListEvent.TriggerRefreshList),
+            expectedViewModel = BreedsListViewState.BreedsListViewContent(
+                dogBreeds = listOf(DogBreedItem(id = "test_breed_2", displayName = "Test_breed_2")),
+                isRefreshing = false,
+                error = null,
+            )
+        )
+    }
+
+    private fun assertViewState(
+        repositoryValues: List<DataResult<DataModel.Breeds>>,
+        events: List<BreedsListEvent> = emptyList(),
         expectedViewModel: BreedsListViewState,
     ) {
-        coEvery { repository.getBreeds() } returns repositoryValue
+        coEvery { repository.getBreeds() } returnsMany repositoryValues
         val viewModel = BreedsListViewModel(repository, navigationDispatcher)
+
+        events.forEach { viewModel.accept(it) }
 
         val viewState = viewModel.viewState.value
 
-        assertThat(viewState)
-            .asInstanceOf(InstanceOfAssertFactories.type(BreedsListViewState.BreedsListViewContent::class.java))
-            .isEqualTo(expectedViewModel)
+        assertThat(viewState).isEqualTo(expectedViewModel)
+    }
+
+    private fun successResult(id: String = "test_breed") =
+        DataResult.Success(DataModel.Breeds(listOf(DataModel.Breeds.BreedData(id))))
+
+    private companion object {
+        val ErrorResult = DataResult.Failure<DataModel.Breeds>("404")
+
+        val ExpectedSuccessModel = BreedsListViewState.BreedsListViewContent(
+            dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed")),
+            isRefreshing = false,
+            error = null,
+        )
+
+        val ExpectedErrorModel = BreedsListViewState.BreedsListViewContent(
+            dogBreeds = emptyList(),
+            isRefreshing = false,
+            error = ErrorViewState.NetworkError("404"),
+        )
     }
 }
