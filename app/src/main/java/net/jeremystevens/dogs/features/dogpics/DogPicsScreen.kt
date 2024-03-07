@@ -73,7 +73,7 @@ private fun DogPicsContent(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalStaggeredGrid(
-                columns = StaggeredGridCells.Fixed(2),
+                columns = StaggeredGridCells.Adaptive(150.dp),
                 contentPadding = PaddingValues(8.dp),
                 verticalItemSpacing = 8.dp,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
