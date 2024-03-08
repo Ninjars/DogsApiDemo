@@ -14,6 +14,7 @@ import net.jeremystevens.dogs.data.DogsRepository
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State.BreedsList
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State.Loading
+import net.jeremystevens.dogs.features.breedslist.BreedsListViewState.BreedsListViewContent
 import net.jeremystevens.dogs.ui.components.ErrorViewState
 import net.jeremystevens.dogs.utils.toViewState
 import java.util.function.Consumer
@@ -38,7 +39,12 @@ class BreedsListViewModel @Inject constructor(
     override fun accept(event: BreedsListEvent) {
         viewModelScope.launch {
             when (event) {
-                is BreedsListEvent.BreedSelected -> navigationDispatcher.navigateTo(Route.BreedPhotos(event.id))
+                is BreedsListEvent.BreedSelected -> navigationDispatcher.navigateTo(
+                    Route.BreedPhotos(
+                        event.id
+                    )
+                )
+
                 is BreedsListEvent.TriggerRefreshList -> {
                     stateFlow.value = stateFlow.value.setIsRefreshing()
                     stateFlow.value = async { updateState(stateFlow.value, repository) }.await()
@@ -56,6 +62,7 @@ class BreedsListViewModel @Inject constructor(
         ) : State {
             data class DogBreedItem(
                 val id: String,
+                val photoUrl: String?,
             )
 
             data class ErrorState(
@@ -77,12 +84,13 @@ private fun State.setIsRefreshing(): State =
 
 private fun State.toViewState(): BreedsListViewState =
     when (this) {
-        is BreedsList -> BreedsListViewState.BreedsListViewContent(
+        is BreedsList -> BreedsListViewContent(
             isRefreshing = isRefreshing,
             dogBreeds = dogBreeds.map {
-                BreedsListViewState.BreedsListViewContent.DogBreedItem(
-                    it.id,
-                    it.id.replaceFirstChar { char -> char.uppercase() },
+                BreedsListViewContent.DogBreedItem(
+                    id = it.id,
+                    displayName = it.id.replaceFirstChar { char -> char.uppercase() },
+                    photoUrl = it.photoUrl,
                 )
             },
             error = error?.toErrorViewState(),
@@ -120,7 +128,7 @@ private suspend fun updateState(state: State, repository: DogsRepository): State
         )
 
         is DataResult.Success -> loadedState.copy(
-            dogBreeds = data.data.breeds.map { BreedsList.DogBreedItem(it.id) },
+            dogBreeds = data.data.breeds.map { BreedsList.DogBreedItem(it.id, it.photoUrl) },
             isRefreshing = false,
             error = null,
         )

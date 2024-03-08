@@ -2,9 +2,9 @@ package net.jeremystevens.dogs.data
 
 object DataModel {
     data class Breeds(val breeds: List<BreedData>) {
-        data class BreedData(val id: String)
+        data class BreedData(val id: String, val photoUrl: String?)
     }
-    data class BreedDetails(val images: List<String>)
+    data class BreedDetails(val id: String, val images: List<String>)
 }
 
 sealed class DataResult<T>(val isSuccess: Boolean) {

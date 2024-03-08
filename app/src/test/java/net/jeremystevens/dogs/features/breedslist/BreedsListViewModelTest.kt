@@ -85,7 +85,7 @@ class BreedsListViewModelTest {
             repositoryValues = listOf(successResult(), ErrorResult),
             events = listOf(BreedsListEvent.TriggerRefreshList),
             expectedViewModel = BreedsListViewState.BreedsListViewContent(
-                dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed")),
+                dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed", photoUrl = "url")),
                 isRefreshing = false,
                 error = ErrorViewState.NetworkError("404"),
             )
@@ -98,7 +98,7 @@ class BreedsListViewModelTest {
             repositoryValues = listOf(successResult(), successResult("test_breed_2")),
             events = listOf(BreedsListEvent.TriggerRefreshList),
             expectedViewModel = BreedsListViewState.BreedsListViewContent(
-                dogBreeds = listOf(DogBreedItem(id = "test_breed_2", displayName = "Test_breed_2")),
+                dogBreeds = listOf(DogBreedItem(id = "test_breed_2", displayName = "Test_breed_2", photoUrl = "url")),
                 isRefreshing = false,
                 error = null,
             )
@@ -121,13 +121,13 @@ class BreedsListViewModelTest {
     }
 
     private fun successResult(id: String = "test_breed") =
-        DataResult.Success(DataModel.Breeds(listOf(DataModel.Breeds.BreedData(id))))
+        DataResult.Success(DataModel.Breeds(listOf(DataModel.Breeds.BreedData(id, "url"))))
 
     private companion object {
         val ErrorResult = DataResult.Failure<DataModel.Breeds>("404")
 
         val ExpectedSuccessModel = BreedsListViewState.BreedsListViewContent(
-            dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed")),
+            dogBreeds = listOf(DogBreedItem(id = "test_breed", displayName = "Test_breed", photoUrl = "url")),
             isRefreshing = false,
             error = null,
         )
