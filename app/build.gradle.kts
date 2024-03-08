@@ -92,10 +92,7 @@ dependencies {
     testImplementation("io.mockk:mockk-android:${mockkVersion}")
     testImplementation("io.mockk:mockk-agent:${mockkVersion}")
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1") {
-        // https://github.com/Kotlin/kotlinx.coroutines/tree/master/kotlinx-coroutines-debug#debug-agent-and-android
-//        exclude group : "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
-    }
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
