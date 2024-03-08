@@ -2,7 +2,7 @@ package net.jeremystevens.dogs.data
 
 interface DogsRepository {
     suspend fun getBreeds(): DataResult<DataModel.Breeds>
-    suspend fun getDataForBreed(breedId: String): DataResult<DataModel.BreedDetails>
+    suspend fun getDataForBreed(breedId: String, count: Int): DataResult<DataModel.BreedDetails>
 }
 
 /**
@@ -18,6 +18,6 @@ class DogsRepositoryImpl(
     override suspend fun getBreeds() =
         remoteDataSource.getBreeds()
 
-    override suspend fun getDataForBreed(breedId: String) =
-        remoteDataSource.getDataForBreed(breedId)
+    override suspend fun getDataForBreed(breedId: String, count: Int) =
+        remoteDataSource.getDataForBreed(breedId, count)
 }

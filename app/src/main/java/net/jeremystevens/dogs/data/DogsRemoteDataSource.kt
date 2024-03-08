@@ -17,9 +17,9 @@ class DogsRemoteDataSource @Inject constructor(
             DataResult.Failure("Exception: ${e.message}")
         }
 
-    suspend fun getDataForBreed(breedId: String): DataResult<BreedDetails> =
+    suspend fun getDataForBreed(breedId: String, count: Int): DataResult<BreedDetails> =
         try {
-            service.getBreedImages(id = breedId, count = 10).extractResult { it.mapToDataModel() }
+            service.getBreedImages(id = breedId, count = count).extractResult { it.mapToDataModel() }
         } catch (e: Exception) {
             DataResult.Failure("Exception: ${e.message}")
         }

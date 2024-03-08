@@ -69,7 +69,7 @@ private fun State.setIsRefreshing(): State =
     }
 
 private suspend fun updateState(breedId: String, state: State, repository: DogsRepository): State {
-    val data = repository.getDataForBreed(breedId)
+    val data = repository.getDataForBreed(breedId, 10)
     val loadedState = when (state) {
         is State.Content -> state
         is State.Loading -> State.Content.Default
