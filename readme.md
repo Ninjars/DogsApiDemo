@@ -82,10 +82,10 @@ Everything between the Repository and the API-calling service is contained in `/
 simple dagger modules providing the repository and api service singletons are in `/di`. 
 
 ### Screenshots
-![List of breeds](https://github.com/Ninjars/DogsApiDemo/assets/5053926/5460bb87-9472-4ec4-9e71-11556722f369)
-![Multiple pictures of dogs of the same breed](https://github.com/Ninjars/DogsApiDemo/assets/5053926/a9bc039e-90eb-4677-88b5-6c950362cd61)
-![Error popup indicating connection was not found to server](https://github.com/Ninjars/DogsApiDemo/assets/5053926/94e163c2-520f-4c28-baaa-6c390e806235)
-![Landscape mode](https://github.com/Ninjars/DogsApiDemo/assets/5053926/fa18733c-9e86-459c-baf0-9274498fe169)
+<img src="https://github.com/Ninjars/DogsApiDemo/assets/5053926/5460bb87-9472-4ec4-9e71-11556722f369" width="100">
+<img src="https://github.com/Ninjars/DogsApiDemo/assets/5053926/a9bc039e-90eb-4677-88b5-6c950362cd61" width="100">
+<img src="https://github.com/Ninjars/DogsApiDemo/assets/5053926/94e163c2-520f-4c28-baaa-6c390e806235" width="100">
+<img src="https://github.com/Ninjars/DogsApiDemo/assets/5053926/fa18733c-9e86-459c-baf0-9274498fe169" height="100">
 
 
 
