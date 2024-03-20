@@ -3,7 +3,6 @@ package net.jeremystevens.dogs.features.breedslist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -47,7 +46,7 @@ class BreedsListViewModel @Inject constructor(
 
                 is BreedsListEvent.TriggerRefreshList -> {
                     stateFlow.value = stateFlow.value.setIsRefreshing()
-                    stateFlow.value = async { updateState(stateFlow.value, repository) }.await()
+                    stateFlow.value = updateState(stateFlow.value, repository)
                 }
             }
         }
