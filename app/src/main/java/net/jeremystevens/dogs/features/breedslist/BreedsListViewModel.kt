@@ -15,7 +15,7 @@ import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State.Bree
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewModel.State.Loading
 import net.jeremystevens.dogs.features.breedslist.BreedsListViewState.BreedsListViewContent
 import net.jeremystevens.dogs.ui.components.ErrorViewState
-import net.jeremystevens.dogs.utils.toViewState
+import net.jeremystevens.dogs.utils.toViewStateFlow
 import java.util.function.Consumer
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class BreedsListViewModel @Inject constructor(
     private val stateFlow = MutableStateFlow<State>(Loading)
 
     val viewState: StateFlow<BreedsListViewState> =
-        stateFlow.toViewState(viewModelScope) { it.toViewState() }
+        stateFlow.toViewStateFlow(viewModelScope) { it.toViewState() }
 
     init {
         viewModelScope.launch {

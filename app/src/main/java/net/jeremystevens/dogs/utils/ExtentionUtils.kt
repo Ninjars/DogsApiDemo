@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-fun <T, R> MutableStateFlow<T>.toViewState(scope: CoroutineScope, mapper: (T) -> R) =
+fun <T, R> MutableStateFlow<T>.toViewStateFlow(scope: CoroutineScope, mapper: (T) -> R) =
     map(mapper)
         .stateIn(
             scope,

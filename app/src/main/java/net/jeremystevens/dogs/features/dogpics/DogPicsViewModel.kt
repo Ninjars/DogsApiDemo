@@ -12,7 +12,7 @@ import net.jeremystevens.dogs.data.DataResult
 import net.jeremystevens.dogs.data.DogsRepository
 import net.jeremystevens.dogs.features.dogpics.DogPicsViewModel.State
 import net.jeremystevens.dogs.ui.components.ErrorViewState
-import net.jeremystevens.dogs.utils.toViewState
+import net.jeremystevens.dogs.utils.toViewStateFlow
 import java.util.function.Consumer
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class DogPicsViewModel @Inject constructor(
     private val stateFlow = MutableStateFlow<State>(State.Loading)
 
     val viewState: StateFlow<DogPicsViewState> =
-        stateFlow.toViewState(viewModelScope) { it.toViewState() }
+        stateFlow.toViewStateFlow(viewModelScope) { it.toViewState() }
 
     init {
         viewModelScope.launch {
